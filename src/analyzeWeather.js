@@ -2,10 +2,16 @@
 class analyzeWeather {
     #weatherData;
     #currentDay;
+    #currentUnit;
 
-    constructor(weatherData, currentDay) {
+    constructor(weatherData, currentDay, currentUnit) {
         this.#weatherData = weatherData;
         this.#currentDay = this.#weatherData.days[currentDay];
+        this.#currentUnit = currentUnit;
+    }
+
+    getCurrentUnit() {
+        return this.#currentUnit;
     }
     
     getLocation() {
@@ -21,15 +27,15 @@ class analyzeWeather {
     }
 
     getTemp() {
-        return this.#weatherData.currentConditions.temp;
+        return this.#weatherData.currentConditions.temp + this.#currentUnit;
     }
 
     getFeelsLike() {
-        return this.#weatherData.currentConditions.feelslike;
+        return this.#weatherData.currentConditions.feelslike + this.#currentUnit;
     }
 
     getHumidity() {
-        return this.#weatherData.currentConditions.humidity;
+        return this.#weatherData.currentConditions.humidity + "%";
     }
 
     getPrecip() {
@@ -57,7 +63,7 @@ class analyzeWeather {
     }
 
     getDaysTemp() {
-        return this.#currentDay.temp;
+        return this.#currentDay.temp + this.#currentUnit;
     }
 
     getDaysPrecipitation() {
@@ -77,7 +83,7 @@ class analyzeWeather {
     }
 
     getHoursTemp(index) {
-        return this.#currentDay.hours[index].temp;
+        return this.#currentDay.hours[index].temp + this.#currentUnit;
     }
 
     getHoursIcon(index) {
@@ -85,11 +91,11 @@ class analyzeWeather {
     }
 
     getHoursFeelsLike(index) {
-        return this.#currentDay.hours[index].feelslike + "%";
+        return this.#currentDay.hours[index].feelslike + this.#currentUnit;
     }
 
     getHoursPrecipitation(index) {
-        return this.#currentDay.hours[index].precip;
+        return this.#currentDay.hours[index].precip + "%";
     }
 
 

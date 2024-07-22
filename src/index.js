@@ -118,6 +118,12 @@ class DOMAdditions {
     }
   }
 
+  removeDays() {
+    while (this.#days.firstChild) {
+        this.#days.removeChild(this.#days.firstChild);
+      }
+  }
+
   renderDays() {
     console.log("rendering days");
     this.#forecastContainer.removeChild(this.#hours);
@@ -167,6 +173,11 @@ class DOMAdditions {
     analysis.setCurrentDay(0);
   }
 
+  removeHours() {
+    while(this.#hours.firstChild){
+        this.#hours.removeChild(this.#hours.firstChild);
+    }
+ }
   renderHours() {
     this.#forecastContainer.removeChild(this.#days);
     this.#forecastContainer.appendChild(this.#hours);
@@ -228,11 +239,13 @@ class DOMAdditions {
 
   buildNewQuery(changeDaily = false, changeUnit, location) {
     let query = new queryBuilder();
+    let unit = "°C";
     if (changeDaily) {
       query.changeDaily();
     }
     if (changeUnit == "us") {
       query.changeUnit();
+      unit = "°F";
     }
     if (location != undefined) {
       query.setLocation(location);
@@ -240,9 +253,21 @@ class DOMAdditions {
     }
     let weatherData = getWeatherData(query);
     weatherData.then((data) => {
-      let analysis = new analyzeWeather(data, 1);
+      let analysis = new analyzeWeather(data, 1, unit);
       this.renderCurrentWeather(analysis);
       this.renderLocation(analysis);
+      
+      this.removeDays();
+      this.removeHours();
+      
+      this.createDays(analysis);
+      this.createHours(analysis);
+      if (this.#currentDaily == "include=hours") {
+        this.renderHours();
+      }
+      else {
+        this.renderDays();
+      }
     });
   }
 }
@@ -254,7 +279,7 @@ window.onload = function () {
   let query = new queryBuilder();
   let weatherData = getWeatherData(query);
   weatherData.then((data) => {
-    let analysis = new analyzeWeather(data, 0);
+    let analysis = new analyzeWeather(data, 0, "°C");
     const dom = new DOMAdditions(
       query.getUnit(),
       query.getLocation(),
