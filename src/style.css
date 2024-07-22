@@ -40,3 +40,13 @@ nav > *:nth-child(n) {
 .error {
     outline: 2px solid red;
 }
+
+.currentIcon {
+    width: 400px;
+    height: auto;
+}
+
+.day > img {
+    width: 100px;
+    height: auto;
+}

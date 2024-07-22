@@ -4,147 +4,271 @@ import analyzeWeather from "./analyzeWeather.js";
 import images from "./images.js";
 import "./style.css";
 import viewDropDown from "./dropDown.js";
+import { format, parse, parseISO } from "date-fns";
 
 class DOMAdditions {
-    #weatherContainer;
-    
-    #factsContainer;
-    #degrees;
-    #currentDegrees;
-    #feelsLike;
-    #humidity;
-    #precipitation;
-    #currentIcon;
+  #weatherContainer;
 
-    #locationContainer;
-    #description;
-    #location;
-    #time;
+  #factsContainer;
+  #degrees;
+  #currentDegrees;
+  #feelsLike;
+  #humidity;
+  #precipitation;
+  #currentIcon;
 
-    #searchButton;
-    #searchForm;
-    #searchBar;
-    #settings;
-    #dailyHourly;
+  #locationContainer;
+  #description;
+  #location;
+  #currentLocation;
+  #time;
 
-    constructor(currentDegrees) {
-        this.#weatherContainer = document.querySelector(".weatherContainer");
-        
-        this.#factsContainer = document.querySelector(".factsContainer");
-        this.#degrees = document.querySelector(".degrees");
-        this.#currentDegrees = currentDegrees;
-        this.#feelsLike = document.querySelector(".feelsLike");
-        this.#humidity = document.querySelector(".humidity");
-        this.#precipitation = document.querySelector(".precipitation");
-        this.#currentIcon = document.querySelector(".currentIcon");
+  #forecastContainer;
+  #days;
+  #hours;
+  #currentDaily;
 
-        this.#locationContainer = document.querySelector(".locationContainer");
-        this.#description = document.querySelector(".description");
-        this.#location = document.querySelector(".location");
-        this.#time = document.querySelector(".time");
+  #searchButton;
+  #searchForm;
+  #searchBar;
+  #settings;
+  #dailyHourly;
 
-        this.#searchButton = document.querySelector('.search > button');
-        this.#searchForm = document.querySelector('form');
-        this.#searchBar = document.querySelector('input[type="search"]');
-        this.#settings = document.querySelector('.unit');
-        this.#dailyHourly = document.querySelector('.dateTime');
+  constructor(currentDegrees, currentLocation, currentDaily) {
+    this.#weatherContainer = document.querySelector(".weatherContainer");
 
-        this.attachEventListeners();
+    this.#factsContainer = document.querySelector(".factsContainer");
+    this.#degrees = document.querySelector(".degrees");
+    this.#currentDegrees = currentDegrees;
+    this.#feelsLike = document.querySelector(".feelsLike");
+    this.#humidity = document.querySelector(".humidity");
+    this.#precipitation = document.querySelector(".precipitation");
+    this.#currentIcon = document.querySelector(".currentIcon");
+
+    this.#locationContainer = document.querySelector(".locationContainer");
+    this.#description = document.querySelector(".description");
+    this.#location = document.querySelector(".location");
+    this.#currentLocation = currentLocation;
+    this.#time = document.querySelector(".time");
+
+    this.#searchButton = document.querySelector(".search > button");
+    this.#searchForm = document.querySelector("form");
+    this.#searchBar = document.querySelector('input[type="search"]');
+    this.#settings = document.querySelector(".unit");
+    this.#dailyHourly = document.querySelector(".dateTime");
+
+    this.#forecastContainer = document.querySelector(".forecastContainer");
+    this.#days = document.querySelector(".days");
+    this.#hours = document.querySelector(".hours");
+    this.#currentDaily = currentDaily;
+
+    this.attachEventListeners();
+  }
+
+  renderCurrentWeather(analysis) {
+    this.#degrees.textContent = analysis.getTemp();
+    this.#feelsLike.textContent = "Feels Like: " + analysis.getFeelsLike();
+    this.#humidity.textContent = "Humidity: " + analysis.getHumidity();
+    this.#precipitation.textContent = "Precipitation: " + analysis.getPrecip();
+    this.#currentIcon.src = images[analysis.getIcon() + ".svg"];
+  }
+
+  renderLocation(analysis) {
+    this.#description.textContent = analysis.getDescription();
+    this.#location.textContent = analysis.getLocation();
+    this.#time.textContent =
+      "Last Updated Time: " +
+      format(parse(analysis.getDateTime(), "HH:mm:ss", new Date()), "h:mm a");
+  }
+
+  createDays(analysis) {
+    for (let i = 1; i < 7; i++) {
+      let day = document.createElement("div");
+      day.classList.add("day");
+
+      let date = document.createElement("div");
+      date.classList.add("date");
+
+      analysis.setCurrentDay(i);
+      date.textContent = format(
+        parseISO(analysis.getDaysDate()),
+        "MMMM d, yyyy"
+      );
+      let condition = document.createElement("h3");
+      condition.classList.add("condition");
+      condition.textContent = analysis.getDaysCondition();
+
+      let temp = document.createElement("h2");
+      temp.classList.add("temp");
+      temp.textContent = analysis.getDaysTemp();
+
+      let icon = document.createElement("img");
+      icon.src = images[analysis.getDaysIcon() + ".svg"];
+
+      let precip = document.createElement("h3");
+      precip.classList.add("precip");
+      precip.textContent = analysis.getDaysPrecipitation();
+
+      day.appendChild(icon);
+      day.appendChild(temp);
+      day.appendChild(date);
+      day.appendChild(condition);
+      day.appendChild(precip);
+      this.#days.appendChild(day);
     }
+  }
 
+  renderDays() {
+    console.log("rendering days");
+    this.#forecastContainer.removeChild(this.#hours);
+    this.#forecastContainer.appendChild(this.#days);
+  }
 
-    renderCurrentWeather(analysis) {
-        this.#degrees.textContent = analysis.getTemp();
-        this.#feelsLike.textContent = "Feels Like: " + analysis.getFeelsLike();
-        this.#humidity.textContent = "Humidity: " + analysis.getHumidity();
-        this.#precipitation.textContent = "Precipitation: " + analysis.getPrecip();
-        this.#currentIcon.src = images[analysis.getIcon() + ".svg"];
+  createHours(analysis) {
+    for (let i = 0; i < 24; i++) {
+      let hour = document.createElement("div");
+      hour.classList.add("hour");
+
+      let time = document.createElement("div");
+      time.classList.add("hoursTime");
+      console.log("before");
+      time.textContent = format(
+        parse(analysis.getHoursHour(i), "HH:mm:ss", new Date()),
+        "h:mm a"
+      );
+
+      let condition = document.createElement("h3");
+      condition.classList.add("hoursCondition");
+      condition.textContent = analysis.getHoursCondition(i);
+
+      let temp = document.createElement("h2");
+      temp.classList.add("hoursTemp");
+      temp.textContent = analysis.getHoursTemp(i);
+
+      let icon = document.createElement("img");
+      icon.src = images[analysis.getHoursIcon(i) + ".svg"];
+
+      let precip = document.createElement("h3");
+      precip.classList.add("hoursPrecip");
+      precip.textContent = analysis.getHoursPrecipitation(i);
+
+      let feelsLike = document.createElement("h3");
+      feelsLike.classList.add("hoursFeelsLike");
+      feelsLike.textContent = analysis.getHoursFeelsLike(i);
+
+      hour.appendChild(icon);
+      hour.appendChild(temp);
+      hour.appendChild(time);
+      hour.appendChild(condition);
+      hour.appendChild(feelsLike);
+      hour.appendChild(precip);
+      this.#hours.appendChild(hour);
     }
+    analysis.setCurrentDay(0);
+  }
 
-    renderLocation(analysis) {
-        this.#description.textContent = analysis.getDescription();
-        this.#location.textContent = analysis.getLocation();
-        this.#time.textContent = analysis.getDateTime();
+  renderHours() {
+    this.#forecastContainer.removeChild(this.#days);
+    this.#forecastContainer.appendChild(this.#hours);
+  }
+
+  attachEventListeners() {
+    this.#searchButton.addEventListener(
+      "click",
+      this.handleSearchInput.bind(this)
+    );
+    this.#settings.addEventListener(
+      "click",
+      this.handleSettingsClick.bind(this)
+    );
+    this.#dailyHourly.addEventListener(
+      "click",
+      this.handleDailyHourlyChange.bind(this)
+    );
+  }
+
+  handleSearchInput(event) {
+    event.preventDefault();
+    if (this.#searchBar.value.trim() != "") {
+      this.#searchBar.classList.remove("error");
+      this.buildNewQuery(false, undefined, this.#searchBar.value);
+      this.#searchBar.value = "";
+    } else {
+      this.#searchBar.classList.add("error");
     }
+  }
 
-    attachEventListeners() {
-        this.#searchButton.addEventListener('click', this.handleSearchInput.bind(this));
-        this.#settings.addEventListener('click', this.handleSettingsClick.bind(this));
-        this.#dailyHourly.addEventListener('click', this.handleDailyHourlyChange.bind(this));
+  handleSettingsClick(event) {
+    if (event.target.classList.contains("celsius")) {
+      if (this.#currentDegrees != "metric") {
+        this.#currentDegrees = "metric";
+        this.buildNewQuery(false, this.#currentDegrees, this.#currentLocation);
+      }
+    } else if (event.target.classList.contains("fahrenheit")) {
+      if (this.#currentDegrees != "us") {
+        this.#currentDegrees = "us";
+        this.buildNewQuery(false, this.#currentDegrees, this.#currentLocation);
+      }
     }
+  }
 
-    handleSearchInput(event) {
-        event.preventDefault();
-        if (this.#searchBar.value.trim() != "") {
-            this.#searchBar.classList.remove('error');
-            this.buildNewQuery(false, undefined, this.#searchBar.value);
-
-        }   
-        else {
-            this.#searchBar.classList.add('error');
-        }
+  handleDailyHourlyChange(event) {
+    if (event.target.classList.contains("daily")) {
+      if (this.#currentDaily != "include=days") {
+        this.#currentDaily = "include=days";
+        this.renderDays();
+      }
+    } else if (event.target.classList.contains("hourly")) {
+      if (this.#currentDaily != "include=hours") {
+        this.#currentDaily = "include=hours";
+        this.renderHours();
+      }
     }
+  }
 
-    handleSettingsClick(event) {
-        console.log("Clicked element:", event.target);
-        console.log("Current unit:", this.#currentDegrees);
-    
-        if (event.target.classList.contains('celsius')) {
-            console.log("Attempting to switch to Celsius");
-            if (this.#currentDegrees != "metric") {
-                this.#currentDegrees = "metric";
-                console.log("Switched to Celsius, new unit:", this.#currentDegrees);
-                this.buildNewQuery(false, this.#currentDegrees, undefined);
-            }
-        } else if (event.target.classList.contains('fahrenheit')) {
-            console.log("Attempting to switch to Fahrenheit");
-            if (this.#currentDegrees != "us") {
-                this.#currentDegrees = "us";
-                console.log("Switched to Fahrenheit, new unit:", this.#currentDegrees);
-                this.buildNewQuery(false, this.#currentDegrees, undefined);
-            }
-        }
-    }
-
-    handleDailyHourlyChange(event) {
-        // Logic for handling daily/hourly toggle
-    }
-
-    buildNewQuery(changeDaily = false, changeUnit, location) {
-        let query = new queryBuilder();
-        if (changeDaily) {
-            query.changeDaily();
-        }
-        if (changeUnit == "us") {
-            query.changeUnit();
-        }
-        if (location != undefined) {
-            query.setLocation(location)
-        }
-        let weatherData = getWeatherData(query);
-        weatherData.then((data) => {
-            let analysis = new analyzeWeather(data, 1);
-            this.renderCurrentWeather(analysis);
-            this.renderLocation(analysis);
-        });
-    }
-
-}
-
-window.onload = function() {
-    const dropDown = new viewDropDown("click");
-    dropDown.attachEventListeners();
-
+  buildNewQuery(changeDaily = false, changeUnit, location) {
     let query = new queryBuilder();
+    if (changeDaily) {
+      query.changeDaily();
+    }
+    if (changeUnit == "us") {
+      query.changeUnit();
+    }
+    if (location != undefined) {
+      query.setLocation(location);
+      this.#currentLocation = location;
+    }
     let weatherData = getWeatherData(query);
     weatherData.then((data) => {
-        let analysis = new analyzeWeather(data, 1);
-        const dom = new DOMAdditions(query.getUnit());
-        dom.renderCurrentWeather(analysis);
-        dom.renderLocation(analysis);
-    
+      let analysis = new analyzeWeather(data, 1);
+      this.renderCurrentWeather(analysis);
+      this.renderLocation(analysis);
     });
-    
+  }
 }
 
+window.onload = function () {
+  const dropDown = new viewDropDown("click");
+  dropDown.attachEventListeners();
 
+  let query = new queryBuilder();
+  let weatherData = getWeatherData(query);
+  weatherData.then((data) => {
+    let analysis = new analyzeWeather(data, 0);
+    const dom = new DOMAdditions(
+      query.getUnit(),
+      query.getLocation(),
+      query.getDaily()
+    );
+
+    dom.renderCurrentWeather(analysis);
+
+    dom.renderLocation(analysis);
+
+    dom.createDays(analysis);
+    console.log("rendering days");
+
+    dom.renderDays();
+    dom.createHours(analysis);
+  });
+};

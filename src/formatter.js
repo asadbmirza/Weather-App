@@ -10,7 +10,7 @@ class queryBuilder {
     this.#unit = ["metric", "us"];
     this.#unitIndex = 0;
     this.#dailyOrHourly = ["include=hours", "include=days"];
-    this.#dailyIndex = 0;
+    this.#dailyIndex = 1;
   }
 
   getLocation() {

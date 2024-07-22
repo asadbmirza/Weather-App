@@ -60,7 +60,7 @@ class analyzeWeather {
         return this.#currentDay.temp;
     }
 
-    getDaysPrecipitation(index) {
+    getDaysPrecipitation() {
         return this.#currentDay.precip + "%";
     }
 
@@ -85,7 +85,7 @@ class analyzeWeather {
     }
 
     getHoursFeelsLike(index) {
-        return this.#currentDay.hours[index].feelslike;
+        return this.#currentDay.hours[index].feelslike + "%";
     }
 
     getHoursPrecipitation(index) {
