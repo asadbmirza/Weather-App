@@ -19,7 +19,7 @@ class analyzeWeather {
     }
 
     getDescription() {
-        return this.#weatherData.description;
+        return this.#weatherData.currentConditions.conditions;
     }
 
     getTimezone() {

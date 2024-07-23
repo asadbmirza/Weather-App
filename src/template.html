@@ -3,13 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
     <title>Weather</title>
 </head>
     <body>
         <header>
             <form action="#" class="search">
-                <input type="search" placeholder="Enter a Location" value="Ontario">
-                <button type="submit">Search</button>
+                <div class="searchBarContainer">
+                    <button type="submit" class="searchButton"><img src="#" alt="search"></button>
+                    <input type="search" placeholder="Enter a Location" value="Ontario">
+                    
+                </div>
             </form>
 
             <div class="dropDown">
@@ -33,8 +39,10 @@
             <div class="weatherContainer">
                 <div class="factsContainer">
                     <img class="currentIcon" src="#" alt="weatherIcon">
-                    <h1 class="degrees">30°C</h1>
-                    <h3 class="feelsLike">Feels Like: </h3>
+                    <div>
+                        <h1 class="degrees">30°C</h1>
+                        <h3 class="feelsLike">Feels Like: </h3>
+                    </div>
                     <h3 class="humidity">Humidity: </h3>
                     <h3 class="precipitation">Precipitation: </h3>
                 </div>

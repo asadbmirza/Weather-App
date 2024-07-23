@@ -2,6 +2,7 @@ import getWeatherData from "./getWeather";
 import queryBuilder from "./formatter.js";
 import analyzeWeather from "./analyzeWeather.js";
 import images from "./images.js";
+import searchIcon from "./map-search.svg" ;
 import "./style.css";
 import viewDropDown from "./dropDown.js";
 import { format, parse, parseISO } from "date-fns";
@@ -29,6 +30,7 @@ class DOMAdditions {
   #currentDaily;
 
   #searchButton;
+  #searchButtonImg;
   #searchForm;
   #searchBar;
   #settings;
@@ -51,7 +53,9 @@ class DOMAdditions {
     this.#currentLocation = currentLocation;
     this.#time = document.querySelector(".time");
 
-    this.#searchButton = document.querySelector(".search > button");
+    this.#searchButton = document.querySelector(".searchBarContainer > button");
+    this.#searchButtonImg = document.querySelector(".searchBarContainer > button > img");
+    this.#searchButtonImg.src = searchIcon;
     this.#searchForm = document.querySelector("form");
     this.#searchBar = document.querySelector('input[type="search"]');
     this.#settings = document.querySelector(".unit");
@@ -67,7 +71,7 @@ class DOMAdditions {
 
   renderCurrentWeather(analysis) {
     this.#degrees.textContent = analysis.getTemp();
-    this.#feelsLike.textContent = "Feels Like: " + analysis.getFeelsLike();
+    this.#feelsLike.textContent = "Feels Like " + analysis.getFeelsLike();
     this.#humidity.textContent = "Humidity: " + analysis.getHumidity();
     this.#precipitation.textContent = "Precipitation: " + analysis.getPrecip();
     this.#currentIcon.src = images[analysis.getIcon() + ".svg"];
@@ -160,7 +164,7 @@ class DOMAdditions {
 
       let feelsLike = document.createElement("h3");
       feelsLike.classList.add("hoursFeelsLike");
-      feelsLike.textContent = analysis.getHoursFeelsLike(i);
+      feelsLike.textContent = "Feels Like " + analysis.getHoursFeelsLike(i);
 
       hour.appendChild(icon);
       hour.appendChild(temp);
